@@ -35,7 +35,7 @@ import {
       flex: 1,
       paddingHorizontal: 20,
       paddingVertical: 40,
-      backgroundColor: colors.white,
+      backgroundColor: colors.black,
     },
     view: {
       flex: 1,

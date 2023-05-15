@@ -1,9 +1,10 @@
 export default colors = {
-    white: "white",
+    white: "black",
     gray: "gray",
-    black: "black",
+    black: "white",
     lightBlack: "rgba(0,0,0, 0.5)",
     lightGray: "rgba(220,220,220, 0.5)",
-    primary: "rgba(0,0,250, 0.2)",
-    transparentBlack: "rgba(0,0,0, 0.1)"
+    primary: "#f5a52c",
+    transparentBlack: "rgba(0,0,0, 0.1)",
+    red: "red"
 }

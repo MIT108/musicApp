@@ -2,6 +2,7 @@ import { StyleSheet, Text, TextInput, View } from "react-native";
 import React, { forwardRef, useState } from "react";
 import { Entypo } from "@expo/vector-icons";
 import colors from "../config/colors";
+import { FontAwesome, MaterialCommunityIcons } from "react-native-vector-icons";
 import { ScrollView } from "react-native";
 import { filters } from "../constants/SearchFilters";
 import CustomModal from "./CustomModal";
@@ -13,13 +14,17 @@ const Search = forwardRef(({ placeholder, keyboardType }, ref) => {
   const [visible, setVisible] = useState(false);
   const [subContent, setSubContent] = useState([]);
   const [currentId, setCurrentId] = useState(null);
+  const [onFilter, setOnFilter] = useState(false);
 
   const addTag = (content) => {
-    setTag([...tags, {
+    setTag([
+      ...tags,
+      {
         filterId: currentId,
         name: content.name,
         categoryId: content.id,
-    }]);
+      },
+    ]);
     setVisible(false);
   };
   const deleteFilterItem = (id) => {
@@ -34,8 +39,20 @@ const Search = forwardRef(({ placeholder, keyboardType }, ref) => {
   const FilterItem = ({ item }) => {
     const active = !!tags.find((id) => id.filterId === item.id);
     return (
-      <TouchableOpacity onPress={() => !active ? showSubContent(item) : deleteFilterItem(item.id)} style={[styles.tag, active? {backgroundColor: colors.lightGray} : null]}>
-        <Text style={[styles.tagText, active? {color: colors.lightBlack} : null]}>{item.title}</Text>
+      <TouchableOpacity
+        onPress={() =>
+          !active ? showSubContent(item) : deleteFilterItem(item.id)
+        }
+        style={[
+          styles.tag,
+          active ? { backgroundColor: colors.lightGray } : null,
+        ]}
+      >
+        <Text
+          style={[styles.tagText, active ? { color: colors.lightBlack } : null]}
+        >
+          {item.title}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -53,36 +70,53 @@ const Search = forwardRef(({ placeholder, keyboardType }, ref) => {
           ))}
         </ScrollView>
       </CustomModal>
-      <View style={styles.searchContainer}>
-        {tags.map((tag, index) => (
-          <View key={index} style={styles.filterItemContainer}>
-            <Text style={styles.filterItemText}>{tag.name}</Text>
-            <Entypo
-              name="cross"
-              size={20}
-              color={colors.tagTextColor}
-              onPress={() => deleteFilterItem(tag.filterId)}
-            />
-          </View>
-        ))}
+      <View style={[styles.inputContainer, onFilter ? styles.onFilter : null]}>
+        <TouchableOpacity style={styles.icons}>
+          <FontAwesome name="search" size={25} color={colors.black} />
+        </TouchableOpacity>
+        <View style={styles.searchContainer}>
+          {tags.map((tag, index) => (
+            <View key={index} style={styles.filterItemContainer}>
+              <Text style={styles.filterItemText}>{tag.name}</Text>
+              <Entypo
+                name="cross"
+                size={20}
+                color={colors.lightBlack}
+                onPress={() => deleteFilterItem(tag.filterId)}
+              />
+            </View>
+          ))}
 
-        <TextInput
-          ref={ref}
-          style={styles.input}
-          onChangeText={setText}
-          value={text}
-          placeholder={placeholder}
-          keyboardType={keyboardType}
-          //   onSubmitEditing={addTag}
-        />
+          <TextInput
+            ref={ref}
+            style={styles.input}
+            onChangeText={setText}
+            value={text}
+            placeholder="Type something ..."
+            keyboardType={keyboardType}
+            placeholderTextColor={colors.black}
+          />
+        </View>
+
+        <TouchableOpacity
+        onPress={()=> setOnFilter(!onFilter)}
+         style={styles.icons}>
+          <MaterialCommunityIcons
+            name="filter-outline"
+            color={colors.black}
+            size={25}
+          />
+        </TouchableOpacity>
       </View>
-      <View style={styles.filterContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {filters.map((item) => {
-            return <FilterItem key={item.id} item={item} />;
-          })}
-        </ScrollView>
-      </View>
+      {onFilter ? (
+        <View style={styles.filterContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {filters.map((item) => {
+              return <FilterItem key={item.id} item={item} />;
+            })}
+          </ScrollView>
+        </View>
+      ) : null}
     </View>
   );
 });
@@ -90,26 +124,36 @@ const Search = forwardRef(({ placeholder, keyboardType }, ref) => {
 export default Search;
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.primary,
-    marginHorizontal: -20,
-    padding: 20,
+  icons: {
+    padding: 5,
+  },
+  inputContainer: {
+    borderRadius: 50,
+    backgroundColor: colors.white,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    marginTop: 10,
   },
   searchContainer: {
-    backgroundColor: colors.white,
-    borderRadius: 15,
+    flex: 1,
     flexDirection: "row",
     lineHeight: 0,
-    padding: 10,
-    marginVertical: 10,
     fontSize: 14,
     borderColor: colors.primary,
-    borderWidth: 1,
     maxWidth: "100%",
     flexWrap: "wrap",
   },
+  onFilter: {
+    borderTopEndRadius: 5,
+    borderTopStartRadius: 5,
+    borderBottomEndRadius: 0,
+    borderBottomStartRadius: 0,
+  },
   tag: {
-    backgroundColor: colors.gray,
+    backgroundColor: colors.primary,
     margin: 5,
     paddingHorizontal: 8,
     paddingVertical: 4,
@@ -120,7 +164,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   tagText: {
-    color: colors.black,
+    color: colors.white,
     fontSize: 15,
   },
   input: {
@@ -129,9 +173,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 10,
     minWidth: 150,
+    color: colors.black
   },
   filterContainer: {
-    marginTop: 10,
+    paddingVertical: 10,
+    paddingLeft: 10,
+    backgroundColor: colors.white,
+    borderBottomEndRadius: 5,
+    borderBottomStartRadius: 5,
   },
   filterItemContainer: {
     backgroundColor: colors.lightGray,
